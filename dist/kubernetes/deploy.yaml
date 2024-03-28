@@ -118,6 +118,8 @@ spec:
       serviceAccountName: catalog
       securityContext:
         fsGroup: 1000
+      imagePullSecrets:
+        - name: lp-registry-secret
       containers:
         - name: catalog
           env:
@@ -147,8 +149,6 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
-      imagePullSecrets:
-        - name: lp-registry-secret
           livenessProbe:
             httpGet:
               path: /health
@@ -342,6 +342,8 @@ spec:
       serviceAccountName: carts
       securityContext:
         fsGroup: 1000
+      imagePullSecrets:
+        - name: lp-registry-secret
       containers:
         - name: carts
           env:
@@ -363,8 +365,6 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
-      imagePullSecrets:
-        - name: lp-registry-secret
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
@@ -573,6 +573,8 @@ spec:
       serviceAccountName: orders
       securityContext:
         fsGroup: 1000
+      imagePullSecrets: 
+        - name: lp-registry-secret
       containers:
         - name: orders
           env:
@@ -606,8 +608,6 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
-      imagePullSecrets:
-        - name: lp-registry-secret
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
@@ -838,6 +838,8 @@ spec:
       serviceAccountName: checkout
       securityContext:
         fsGroup: 1000
+      imagePullSecrets:
+        - name: lp-registry-secret
       containers:
         - name: checkout
           envFrom:
@@ -856,8 +858,6 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
-      imagePullSecrets:
-        - name: lp-registry-secret
           livenessProbe:
             httpGet:
               path: /health
@@ -969,7 +969,7 @@ metadata:
     app.kubernetes.io/name: assets
     app.kubernetes.io/instance: assets
     app.kubernetes.io/component: service
-    app.kuberneres.io/owner: retail-store-sample
+    app.kubernetes.io/owner: retail-store-sample
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
@@ -982,18 +982,19 @@ spec:
       app.kubernetes.io/name: assets
       app.kubernetes.io/instance: assets
       app.kubernetes.io/component: service
-      app.kuberneres.io/owner: retail-store-sample
+      app.kubernetes.io/owner: retail-store-sample
   template:
     metadata:
       labels:
         app.kubernetes.io/name: assets
         app.kubernetes.io/instance: assets
         app.kubernetes.io/component: service
-        app.kuberneres.io/owner: retail-store-sample
+        app.kubernetes.io/owner: retail-store-sample
     spec:
       serviceAccountName: assets
-      securityContext:
-        {}
+      securityContext: {}
+      imagePullSecrets:
+        - name: lp-registry-secret
       containers:
         - name: assets
           envFrom:
@@ -1010,23 +1011,6 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
-      imagePullSecrets:
-        - name: lp-registry-secret
-          livenessProbe:
-            httpGet:
-              path: /health.html
-              port: 8080
-            initialDelaySeconds: 30
-            periodSeconds: 3
-          resources:
-            limits:
-              memory: 128Mi
-            requests:
-              cpu: 128m
-              memory: 128Mi
-          volumeMounts:
-            - mountPath: /tmp
-              name: tmp-volume
       volumes:
         - name: tmp-volume
           emptyDir:
@@ -1149,6 +1133,8 @@ spec:
       serviceAccountName: ui
       securityContext:
         fsGroup: 1000
+      imagePullSecrets:
+        - name: lp-registry-secret
       containers:
         - name: ui
           env:
@@ -1172,8 +1158,6 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
-      imagePullSecrets:
-        - name: lp-registry-secret
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
