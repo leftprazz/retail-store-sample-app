@@ -42,7 +42,7 @@ jobs:
             docker build -f Dockerfile --build-arg APP_ENV=$APP_ENV -t $IMAGE_NAME_ASSETS .
 
             cd ../cart
-            docker build -f ../../images/java17/Dockerfile --build-arg APP_ENV=$APP_ENV -t $IMAGE_NAME_CARTS .
+            docker build -f ../../images/java17/Dockerfile --build-arg APP_ENV=$APP_ENV --build-arg JAR_PATH=target/carts-0.0.1-SNAPSHOT.jar -t $IMAGE_NAME_CARTS .
 
             cd ../catalog
             docker build -f ../../images/go/Dockerfile --build-arg APP_ENV=$APP_ENV -t $IMAGE_NAME_CATALOG .
@@ -51,10 +51,10 @@ jobs:
             docker build -f ../../images/nodejs/Dockerfile --build-arg APP_ENV=$APP_ENV -t $IMAGE_NAME_CHECKOUT .
 
             cd ../orders
-            docker build -f ../../images/java17/Dockerfile --build-arg APP_ENV=$APP_ENV -t $IMAGE_NAME_ORDERS .
+            docker build -f ../../images/java17/Dockerfile --build-arg APP_ENV=$APP_ENV --build-arg JAR_PATH=target/orders-0.0.1-SNAPSHOT.jar -t $IMAGE_NAME_ORDERS .
 
             cd ../ui
-            docker build -f ../../images/java17/Dockerfile --build-arg APP_ENV=$APP_ENV -t $IMAGE_NAME_UI .
+            docker build -f ../../images/java17/Dockerfile --build-arg APP_ENV=$APP_ENV --build-arg JAR_PATH=target/ui-0.0.1-SNAPSHOT.jar -t $IMAGE_NAME_UI .
       - run: 
           name: Docker push artifact registry
           command: |
