@@ -19,6 +19,7 @@ jobs:
       - run:
           name: Deployment image name env
           command: |
+            echo 'export COMMIT_SHORT=$(echo $CIRCLE_SHA1 | cut -c1-7 )' >> COMMIT_SHORT
             for img_env in ASSETS_IMG_ENV CARTS_IMG_ENV CATALOG_IMG_ENV CHECKOUT_IMG_ENV ORDERS_IMG_ENV UI_IMG_ENV; do
                 echo 'export COMMIT_SHORT=$(echo $CIRCLE_SHA1 | cut -c1-7 )' >> "$img_env"
             done
