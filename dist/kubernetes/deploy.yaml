@@ -147,6 +147,8 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+      imagePullSecrets:
+        - name: lp-registry-secret
           livenessProbe:
             httpGet:
               path: /health
@@ -361,6 +363,8 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+      imagePullSecrets:
+        - name: lp-registry-secret
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
@@ -602,6 +606,8 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+      imagePullSecrets:
+        - name: lp-registry-secret
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
@@ -850,6 +856,8 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+      imagePullSecrets:
+        - name: lp-registry-secret
           livenessProbe:
             httpGet:
               path: /health
@@ -1002,6 +1010,8 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+      imagePullSecrets:
+        - name: lp-registry-secret
           livenessProbe:
             httpGet:
               path: /health.html
@@ -1162,6 +1172,8 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+      imagePullSecrets:
+        - name: lp-registry-secret
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness

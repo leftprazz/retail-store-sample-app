@@ -19,7 +19,8 @@ jobs:
       - run:
           name: Deployment image name env
           command: |
-            echo 'export COMMIT_SHORT=$(echo $CIRCLE_SHA1 | cut -c1-7 )' >> IMG_ENV
+            echo 'export COMMIT_SHORT=$(echo $CIRCLE_SHA1 | cut -c1-7 )' >> COMMIT_SHORT
+            source COMMIT_SHORT
             echo 'export IMAGE_NAME_ASSETS=$LP_REGISTRY_PATH$CIRCLE_PROJECT_REPONAME-assets:$CIRCLE_BRANCH-$COMMIT_SHORT' >> ASSETS_IMG_ENV
             echo 'export IMAGE_NAME_CARTS=$LP_REGISTRY_PATH$CIRCLE_PROJECT_REPONAME-carts:$CIRCLE_BRANCH-$COMMIT_SHORT' >> CARTS_IMG_ENV
             echo 'export IMAGE_NAME_CATALOG=$LP_REGISTRY_PATH$CIRCLE_PROJECT_REPONAME-catalog:$CIRCLE_BRANCH-$COMMIT_SHORT' >> CATALOG_IMG_ENV
