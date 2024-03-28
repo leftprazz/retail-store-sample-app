@@ -20,22 +20,60 @@ jobs:
           name: Deployment image name env
           command: |
             echo 'export COMMIT_SHORT=$(echo $CIRCLE_SHA1 | cut -c1-7 )' >> IMG_ENV
-            echo 'export IMAGE_NAME=$LP_REGISTRY_PATH$CIRCLE_PROJECT_REPONAME:$CIRCLE_BRANCH-$COMMIT_SHORT' >> IMG_ENV  
+            echo 'export IMAGE_NAME_ASSETS=$LP_REGISTRY_PATH$CIRCLE_PROJECT_REPONAME-assets:$CIRCLE_BRANCH-$COMMIT_SHORT' >> ASSETS_IMG_ENV
+            echo 'export IMAGE_NAME_CARTS=$LP_REGISTRY_PATH$CIRCLE_PROJECT_REPONAME-carts:$CIRCLE_BRANCH-$COMMIT_SHORT' >> CARTS_IMG_ENV
+            echo 'export IMAGE_NAME_CATALOG=$LP_REGISTRY_PATH$CIRCLE_PROJECT_REPONAME-catalog:$CIRCLE_BRANCH-$COMMIT_SHORT' >> CATALOG_IMG_ENV
+            echo 'export IMAGE_NAME_CHECKOUT=$LP_REGISTRY_PATH$CIRCLE_PROJECT_REPONAME-checkout:$CIRCLE_BRANCH-$COMMIT_SHORT' >> CHECKOUT_IMG_ENV
+            echo 'export IMAGE_NAME_ORDERS=$LP_REGISTRY_PATH$CIRCLE_PROJECT_REPONAME-orders:$CIRCLE_BRANCH-$COMMIT_SHORT' >> ORDERS_IMG_ENV
+            echo 'export IMAGE_NAME_UI=$LP_REGISTRY_PATH$CIRCLE_PROJECT_REPONAME-ui:$CIRCLE_BRANCH-$COMMIT_SHORT' >> UI_IMG_ENV
             echo -n $LP_REGISTRY_SA | base64 --decode > LP_REGISTRY_SA.json
       - run:
-          name: Build docker image
+          name: Build docker image for every service
           command: |
-            source IMG_ENV
             source APP_ENV
-            docker build -f /path/to/Dockerfile --build-arg APP_ENV=$APP_ENV -t $IMAGE_NAME .
+            source ASSETS_IMG_ENV
+            source CATALOG_IMG_ENV
+            source CARTS_IMG_ENV
+            source CHECKOUT_IMG_ENV
+            source ORDERS_IMG_ENV
+            source UI_IMG_ENV
+
+            cd src/assets
+            docker build -f src/assets/Dockerfile --build-arg APP_ENV=$APP_ENV -t $IMAGE_NAME_ASSETS .
+
+            cd ../cart
+            docker build -f images/java17/Dockerfile --build-arg APP_ENV=$APP_ENV -t $IMAGE_NAME_CARTS .
+
+            cd ../catalog
+            docker build -f images/go/Dockerfile --build-arg APP_ENV=$APP_ENV -t $IMAGE_NAME_CATALOG .
+
+            cd ../checkout
+            docker build -f images/nodejs/Dockerfile --build-arg APP_ENV=$APP_ENV -t $IMAGE_NAME_CHECKOUT .
+
+            cd ../orders
+            docker build -f images/java17/Dockerfile --build-arg APP_ENV=$APP_ENV -t $IMAGE_NAME_ORDERS .
+
+            cd ../ui
+            docker build -f images/java17/Dockerfile --build-arg APP_ENV=$APP_ENV -t $IMAGE_NAME_UI .
       - run: 
           name: Docker push artifact registry
           command: |
-            source IMG_ENV
+            source ASSETS_IMG_ENV
+            source CARTS_IMG_ENV
+            source CATALOG_IMG_ENV
+            source CHECKOUT_IMG_ENV
+            source ORDERS_IMG_ENV
+            source UI_IMG_ENV
             gcloud auth activate-service-account --key-file LP_REGISTRY_SA.json
             cat LP_REGISTRY_SA.json | docker login -u _json_key --password-stdin https://asia-southeast2-docker.pkg.dev
             gcloud auth configure-docker
-            docker push $IMAGE_NAME 
+
+            docker push $IMAGE_NAME_ASSETS
+            docker push $IMAGE_NAME_CARTS
+            docker push $IMAGE_NAME_CATALOG
+            docker push $IMAGE_NAME_CHECKOUT
+            docker push $IMAGE_NAME_ORDERS
+            docker push $IMAGE_NAME_UI
 
       - run:
           name: Activate service account for GKE
@@ -47,16 +85,21 @@ jobs:
       - run:
           name: Update Kubernetes Deployment
           command: |
-            source IMG_ENV
+            source ASSETS_IMG_ENV
+            source CATALOG_IMG_ENV
+            source CARTS_IMG_ENV
+            source CHECKOUT_IMG_ENV
+            source ORDERS_IMG_ENV
+            source UI_IMG_ENV
             gcloud components install kubectl
             if [ "$CIRCLE_BRANCH" == "main" ]; then
               gcloud container clusters get-credentials gke-infra-cluster --zone asia-southeast1-a --project leftprazz-sgp
-              kubectl set image deployment/assets assets=$IMAGE_NAME -n app
-              kubectl set image deployment/catalog catalog=$IMAGE_NAME -n app
-              kubectl set image deployment/carts carts=$IMAGE_NAME -n app
-              kubectl set image deployment/checkout checkout=$IMAGE_NAME -n app
-              kubectl set image deployment/orders orders=$IMAGE_NAME -n app
-              kubectl set image deployment/ui ui=$IMAGE_NAME -n app
+              kubectl set image deployment/assets assets=$IMAGE_NAME_ASSETS -n app
+              kubectl set image deployment/carts carts=$IMAGE_NAME_CARTS -n app
+              kubectl set image deployment/catalog catalog=$IMAGE_NAME_CATALOG -n app
+              kubectl set image deployment/checkout checkout=$IMAGE_NAME_CHECKOUT -n app
+              kubectl set image deployment/orders orders=$IMAGE_NAME_ORDERS -n app
+              kubectl set image deployment/ui ui=$IMAGE_NAME_UI -n app
             fi
 
       - run: exit 0
